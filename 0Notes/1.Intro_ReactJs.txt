@@ -1,0 +1,184 @@
+Notes link : https://react.dev/learn, 
+love : https://treasure-entrance-00a.notion.site/ReactJS-Notes-and-Assignment-1cec684504f0802abcc9efa896aa3a48
+w3school : https://www.w3schools.com/react/
+https://chatgpt.com/c/6b013f0a-c538-83ee-8307-d5c77abefbca
+
+(map, filter)
+
+
+React is a game of 
+React Component:  A component is a piece of the UI (user interface) that has its own logic and appearance. A component can be as small as a button, or as large as an entire page.
+React components are JavaScript functions that return markup(jsx):
+state :- state are used to remember things for multiple times 
+hooks : Functions starting with use are called Hooks. useState is a built-in Hook provided by React.
+props :- The information you pass down(child) is called props
+conditinol renderring :- 
+useState, useEffect, useRef :-
+Paginatons :-
+API Integration :-
+React-Router-Dom(Routing) :-
+Context API:- 
+Authentication(AuthContext)(Who are you):- Authentication is the process of verifying the identity of a user.
+Authorization (What are you allowed to do?)(help to role based auth) : Authorization determines what actions or resources an authenticated user is permitted to access.
+Authentication vs Authorization :- 
+bcrypt, JWT :-
+
+
+
+
+virtual dom is a tree of ui
+
+    1. what is React 
+React is an open-source JavaScript library developed by Facebook for building fast, interactive, 
+and reusable user interfaces especially for single-page applications. 
+It allows developers to create large web applications using reusable components and updates the UI 
+efficiently when data changes.
+
+React is a JavaScript library made by Facebook.
+We use it to build cool, fast and single page websites, especially the parts users see and 
+use — like buttons, forms, menus, etc.
+
+Instead of writing long, boring code to handle UI changes (like showing/hiding stuff), 
+React lets you create reusable pieces called components. These components make your code cleaner, easier, and faster to update.
+
+So in short:
+👉 React helps you build websites faster with less messy code and better performance.
+👉 React khud samajh jaata hai kya dikhana hai jab state change hoti hai.
+👉 React automatically update karta hai UI ko — bina page reload kare.
+👉 if server is slow so data not load but react website show the structure even before data loading example- youtube
+👉 Har baar page reload kyu karna? Chhoti chhoti cheezein fast update honi chahiye.
+
+
+    2. Who made React?
+React was created by Facebook.
+It was first made by a Facebook engineer named Jordan Walke in 2011.
+Facebook wanted a better way to manage their website, especially their News Feed.
+So they built React to make it easier to update and handle user interfaces (UI) without making the code too messy.
+
+React became public in 2013, and now it's used by tons of companies around the world.
+
+
+
+    3. What is Babel?
+Babel is a JavaScript compiler that allows developers to use next-generation JavaScript features by 
+converting ECMAScript 2015+ (ES6 and beyond) code into backward-compatible JavaScript that can run 
+in older browsers or environments.
+
+Babel is a JavaScript compiler that converts modern JavaScript syntax and JSX 
+into JavaScript code that browsers can understand and execute.
+
+So basically:
+👉 You write modern code → Babel converts it → Browser runs it without problems.
+
+
+  4. How does Babel convert HTML code in React into valid code?
+In React, developers write UI using JSX, which looks like HTML but is not real HTML. 
+Babel is responsible for converting this JSX code into valid JavaScript code (typically using React.createElement) 
+that browsers can understand and run.
+It transforms JSX into React element creation calls, such as React.createElement()
+
+For example, hum React mein likhte hain: const heading = <h1>Hello World</h1>;
+Babel ise JavaScript mein convert kar sakta hai: Traditional transformation:
+const element = React.createElement(
+  "h1",
+  null,
+  "Hello React"
+);
+
+Modern JSX transformation may look like:
+import { jsx } from "react/jsx-runtime";
+
+const element = jsx("h1", {
+  children: "Hello React"
+});
+
+How the process works
+1. JSX Code: <h1>Hello React</h1>
+2. Babel Compiler: JSX is transformed into JavaScript
+3. JavaScript Element: React.createElement(...) or JSX runtime calls
+4. ReactDOM: Displays the React UI inside the browser DOM
+
+  5. What is ReactDOM used for? Write an example.
+ReactDOM is a package provided by React that allows us to interact with the actual DOM (Document Object Model) 
+in the browser. It is mainly use createRoot() from react-dom/client to create a root and root.render() or ReactDOM.render() to display the React application inside a DOM element.
+
+Okay, think of React as the builder of your webpage parts (components), but it doesn't actually put those parts 
+on the screen by itself.
+ReactDOM is the one that takes those React parts and shows them on the actual web page. 
+It connects your React code to the real browser screen.
+
+It’s like:
+🧱 React builds the blocks
+🖼️ ReactDOM puts those blocks on display!
+
+ReactDOM woh bridge hai jo tumhare React components ko real webpage pe dikhata hai.
+Matlab tum React mein jo design banate ho, ReactDOM use actual screen pe render karta hai.
+
+Example
+index.html
+<div id="root"></div>
+
+main.jsx
+import React from "react";
+import { createRoot } from "react-dom/client"; // import root creation functionality
+
+function App() {
+  return <h1>Hello React!</h1>;
+}
+
+const root = createRoot(
+  document.getElementById("root")
+); // creation of root
+
+root.render(<App />); // Displays the App component inside that container
+
+
+
+6. What packages do you need to import to work with React?
+The main packages required for a React application are react and react-dom. 
+The react package provides the core functionality for creating components and working with React, 
+while react-dom provides functionality for rendering React components into the browser DOM.
+
+
+
+7. How do you add React to a web application?
+React can be added to a web application using npm by installing the React and ReactDOM packages, 
+or by using a development tool such as Vite to create a React project. 
+React can also be added using CDN links for simple applications or demonstrations.
+
+
+
+8. What is React.createElement?
+React.createElement() is a method used to create a React element. 
+It accepts a type, props, and children, and returns a React element object 
+that describes what should be displayed in the UI.
+
+
+
+9. What are the three properties that createElement accepts?
+React.createElement() accepts three main arguments:
+1. Type – Specifies the element type, such as an HTML tag or React component.
+2. Props – Specifies the properties or attributes of the element.
+3. Children – Specifies the content inside the element, such as text, other elements, or components.
+
+
+
+10. What is the meaning of render and root?
+Render is the process of displaying React elements or components in the user interface. 
+A root is the starting point where React manages and renders the application inside a DOM container. 
+In modern React, createRoot() creates a root, and root.render() renders the application into it.
+
+
+Quick Revision
+Question	         	 One-line answer
+What is React?	     	 A JavaScript library for building reusable and interactive user interfaces.
+Who made React?    	 	 Jordan Walke at Facebook.
+What is Babel?	     	 A JavaScript compiler that transforms JSX and modern JavaScript syntax.
+How does Babel work? 	 It transforms JSX into JavaScript code that can be processed by the browser and React.
+What is ReactDOM?	     It helps render React components into the browser DOM.
+Main packages?	       	 react and react-dom.
+How to add React?	   	 Using npm, Vite, or CDN.
+What is createElement()? A method that creates a React element.
+Three arguments?		 Type, props, and children.
+What is render?			 The process of displaying/updating React UI.
+What is root?			 The starting container managed by React for rendering the application.

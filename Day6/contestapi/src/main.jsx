@@ -1,0 +1,10 @@
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+import { ThemeContext } from './components/ThemeContext.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <ThemeContext.Provider value={{ theme: "teal" }}>
+    <App />
+  </ThemeContext.Provider>,
+)

@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VHS Tape Portfolio</title>
+    <style>
+        /* Base styles and reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --crt-green: #a2ff00;
+            --crt-blue: #00a2ff;
+            --crt-amber: #ffb800;
+            --text-color: var(--crt-green);
+            --scanline-opacity: 0.15;
+            --glitch-intensity: 0.5;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: var(--text-color);
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* CRT Screen Effect */
+        .crt::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(to bottom,
+                    rgba(18, 16, 16, 0.1) 50%,
+                    rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 100;
+            pointer-events: none;
+            opacity: var(--scanline-opacity);
+        }
+
+        .crt::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0.15;
+            animation: flicker 10s infinite;
+        }
+
+        /* Screen curvature */
+        .screen-curvature {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.9);
+            border-radius: 4px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* VHS PLAY overlay */
+        .vhs-play {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 50;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            text-shadow: 0 0 5px currentColor;
+            animation: blink 2s infinite;
+            mix-blend-mode: difference;
+        }
+
+        /* VHS timestamp */
+        .vhs-timestamp {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            text-shadow: 0 0 3px currentColor;
+            opacity: 0.7;
+        }
+
+        /* Hero section */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px currentColor;
+            animation: glitch-entry 2s forwards;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            max-width: 600px;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 5px currentColor;
+        }
+
+        /* Section headers */
+        .section-header {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            margin: 3rem 0 2rem;
+            padding: 1rem;
+            border: 2px solid var(--text-color);
+            box-shadow: 0 0 10px currentColor;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.1),
+                    transparent);
+            transform: translateX(-100%);
+            animation: vhs-glow 3s infinite;
+        }
+
+        /* Projects grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .project-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--text-color);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 200px;
+            background-color: #222;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-image::after {
+            content: "VHS";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--text-color);
+            padding: 2px 5px;
+            font-size: 0.8rem;
+            border: 1px solid currentColor;
+        }
+
+        .project-info {
+            padding: 1rem;
+        }
+
+        .project-info h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        /* About section */
+        .about-content {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--text-color);
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .about-content::before {
+            content: "USER INFO";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #0a0a0a;
+            padding: 0 10px;
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        /* Contact section */
+        .contact-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .vhs-button {
+            background: transparent;
+            border: 2px solid var(--text-color);
+            color: var(--text-color);
+            padding: 1rem 2rem;
+            font-family: inherit;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 0 5px currentColor;
+            box-shadow: 0 0 10px currentColor;
+            transition: all 0.3s;
+        }
+
+        .vhs-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Controls panel */
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--text-color);
+            padding: 1rem;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 200px;
+        }
+
+        .controls h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-size: 0.9rem;
+            flex: 1;
+        }
+
+        input[type="range"] {
+            flex: 2;
+            -webkit-appearance: none;
+            height: 5px;
+            background: #333;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            background: var(--text-color);
+            cursor: pointer;
+        }
+
+        .theme-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .theme-button {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #fff;
+            cursor: pointer;
+        }
+
+        .theme-green {
+            background: var(--crt-green);
+        }
+
+        .theme-blue {
+            background: var(--crt-blue);
+        }
+
+        .theme-amber {
+            background: var(--crt-amber);
+        }
+
+        /* Loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        .loading-text {
+            font-size: 2rem;
+            text-align: center;
+            animation: insert-tape 3s infinite;
+            text-transform: uppercase;
+        }
+
+        /* Glitch effects */
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        .glitch-text::before {
+            animation: glitch-animation 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+            color: #ff00ff;
+            z-index: -1;
+            left: 2px;
+        }
+
+        .glitch-text::after {
+            animation: glitch-animation 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both infinite;
+            color: #00ffff;
+            z-index: -2;
+            left: -2px;
+        }
+
+        /* Tracking lines */
+        .tracking-line {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 90;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        /* Animations */
+        @keyframes flicker {
+
+            0%,
+            19.999%,
+            22%,
+            62.999%,
+            64%,
+            64.999%,
+            72%,
+            100% {
+                opacity: 0.15;
+            }
+
+            20%,
+            21.999%,
+            63%,
+            63.999%,
+            65%,
+            71.999% {
+                opacity: 0.3;
+            }
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes vhs-glow {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes glitch-entry {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) skewY(5deg);
+                filter: blur(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) skewY(0);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes glitch-animation {
+            0% {
+                transform: translate(0);
+            }
+
+            20% {
+                transform: translate(-2px, 2px);
+            }
+
+            40% {
+                transform: translate(-2px, -2px);
+            }
+
+            60% {
+                transform: translate(2px, 2px);
+            }
+
+            80% {
+                transform: translate(2px, -2px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
+        }
+
+        @keyframes insert-tape {
+            0% {
+                opacity: 0.2;
+            }
+
+            50% {
+                opacity: 1;
+                text-shadow: 0 0 10px var(--text-color);
+            }
+
+            100% {
+                opacity: 0.2;
+            }
+        }
+
+        @keyframes rgb-shift {
+            0% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(3px);
+            }
+
+            51% {
+                transform: translateX(-3px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .controls {
+                left: 20px;
+                right: 20px;
+                bottom: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body class="crt">
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">INSERT TAPE...</div>
+    </div>
+
+    <!-- VHS Overlay Elements -->
+    <div class="vhs-play">PLAY ▶</div>
+    <div class="vhs-timestamp" id="timestamp">12:04 AM 09/13/1998</div>
+    <div class="screen-curvature"></div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="glitch-text" data-text="YOUR NAME">Aditya Mishra</h1>
+            <p>FRONT-END DEVELOPER & VISUAL ARTIST</p>
+        </section>
+
+        <!-- Projects Section -->
+        <div class="section-header">PROJECTS</div>
+        <div class="projects-grid">
+            <!-- Project 1 -->
+            <div class="project-card">
+                <div class="project-image"></div>
+                <div class="project-info">
+                    <h3>Project Title 1</h3>
+                    <p>Project description goes here with some details about what it does and technologies used.</p>
+                </div>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="project-card">
+                <div class="project-image"></div>
+                <div class="project-info">
+                    <h3>Project Title 2</h3>
+                    <p>Project description goes here with some details about what it does and technologies used.</p>
+                </div>
+            </div>
+
+            <!-- Project 3 -->
+            <div class="project-card">
+                <div class="project-image"></div>
+                <div class="project-info">
+                    <h3>Project Title 3</h3>
+                    <p>Project description goes here with some details about what it does and technologies used.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="section-header">ABOUT ME</div>
+        <div class="about-content">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eu ultricies lacinia, nunc
+                nisl aliquam nisl, eu aliquam nisl nunc eu nisl. Nullam auctor, nisl eu ultricies lacinia, nunc nisl
+                aliquam nisl, eu aliquam nisl nunc eu nisl.</p>
+            <p>Nullam auctor, nisl eu ultricies lacinia, nunc nisl aliquam nisl, eu aliquam nisl nunc eu nisl. Nullam
+                auctor, nisl eu ultricies lacinia, nunc nisl aliquam nisl, eu aliquam nisl nunc eu nisl.</p>
+            <p>Skills: HTML, CSS, JavaScript, React, Node.js, and more.</p>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="section-header">CONTACT</div>
+        <div class="contact-buttons">
+            <button class="vhs-button">REWIND ⏪</button>
+            <button class="vhs-button">STOP ⏹</button>
+            <button class="vhs-button">CONTACT ☎</button>
+        </div>
+    </div>
+
+    <!-- Controls Panel -->
+    <div class="controls">
+        <h3>VHS CONTROLS</h3>
+        <div class="control-group">
+            <label for="noise-intensity">Noise Intensity</label>
+            <input type="range" id="noise-intensity" min="0" max="100" value="50">
+        </div>
+        <div class="control-group">
+            <label for="scanline-opacity">Scanline Strength</label>
+            <input type="range" id="scanline-opacity" min="0" max="100" value="15">
+        </div>
+        <div class="theme-buttons">
+            <div class="theme-button theme-green" data-theme="green"></div>
+            <div class="theme-button theme-blue" data-theme="blue"></div>
+            <div class="theme-button theme-amber" data-theme="amber"></div>
+        </div>
+    </div>
+
+    <!-- Audio Element for Ambient Noise -->
+    <audio id="vhsAudio" loop>
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-TV-static-1027.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Simulate loading
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('vhsAudio').play().catch(e => console.log("Audio play failed:", e));
+            }, 3000);
+
+            // Update timestamp
+            function updateTimestamp() {
+                const now = new Date();
+                const options = { hour: '2-digit', minute: '2-digit', hour12: true };
+                const time = now.toLocaleTimeString('en-US', options).toUpperCase();
+                const date = now.toLocaleDateString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: 'numeric'
+                });
+
+                document.getElementById('timestamp').textContent = `${time} ${date}`;
+            }
+
+            setInterval(updateTimestamp, 1000);
+            updateTimestamp();
+
+            // Create tracking lines
+            function createTrackingLine() {
+                const line = document.createElement('div');
+                line.className = 'tracking-line';
+                line.style.top = `${Math.random() * 100}%`;
+                line.style.opacity = Math.random() * 0.7 + 0.3;
+                document.body.appendChild(line);
+
+                // Animate the line
+                setTimeout(() => {
+                    line.style.opacity = '0.8';
+                    line.style.height = '4px';
+                    line.style.boxShadow = '0 0 15px currentColor';
+                }, 100);
+
+                // Remove after animation
+                setTimeout(() => {
+                    document.body.removeChild(line);
+                }, 2000);
+            }
+
+            // Regular tracking lines
+            setInterval(createTrackingLine, 3000);
+
+            // Random glitch effects
+            function triggerRandomGlitch() {
+                const elements = document.querySelectorAll('h1, h2, h3, p, .project-card');
+                const randomElement = elements[Math.floor(Math.random() * elements.length)];
+
+                randomElement.style.animation = 'none';
+                setTimeout(() => {
+                    randomElement.style.animation = 'glitch-animation 0.5s';
+                }, 10);
+
+                setTimeout(() => {
+                    randomElement.style.animation = '';
+                }, 500);
+            }
+
+            setInterval(triggerRandomGlitch, 5000);
+
+            // Hover glitch effects
+            const glitchElements = document.querySelectorAll('.glitch-text, .vhs-button, .project-card');
+            glitchElements.forEach(el => {
+                el.addEventListener('mouseenter', function () {
+                    this.style.animation = 'glitch-animation 0.3s';
+                });
+
+                el.addEventListener('mouseleave', function () {
+                    this.style.animation = '';
+                });
+            });
+
+            // Controls functionality
+            const noiseSlider = document.getElementById('noise-intensity');
+            const scanlineSlider = document.getElementById('scanline-opacity');
+            const themeButtons = document.querySelectorAll('.theme-button');
+
+            noiseSlider.addEventListener('input', function () {
+                document.documentElement.style.setProperty('--glitch-intensity', this.value / 100);
+                document.getElementById('vhsAudio').volume = this.value / 200;
+            });
+
+            scanlineSlider.addEventListener('input', function () {
+                document.documentElement.style.setProperty('--scanline-opacity', this.value / 100);
+            });
+
+            themeButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const theme = this.getAttribute('data-theme');
+                    document.documentElement.style.setProperty('--text-color', `var(--crt-${theme})`);
+                });
+            });
+
+            // Easter egg: rewind effect on Ctrl+R
+            document.addEventListener('keydown', function (e) {
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+
+                    // Create rewind effect
+                    document.body.style.animation = 'rgb-shift 0.2s infinite';
+                    document.getElementById('vhsAudio').playbackRate = -2;
+
+                    setTimeout(() => {
+                        document.body.style.animation = '';
+                        document.getElementById('vhsAudio').playbackRate = 1;
+                    }, 1000);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
